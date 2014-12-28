@@ -34,7 +34,10 @@ sys.path.insert(0, ROOT.rstrip('TAHTMA'))
 
 from TAHTMA.util.HoeffdingRuleModelBased import *
 
-N = 8
+# N = 2
+# N = 3
+N = 12
+
 mu_0 = mu_ini(N**2)  # the initial distribution
 Q = probability_matrix_Q(N)  # the original transition matrix
 P = P_est(Q)  # the new transition matrix
@@ -61,7 +64,9 @@ beta = 0.001
 eta_actual = []
 eta = []
 eta_Sanov = []
+# n_range = range(2 * N * N, 20 * N * N + 5, N * N)
 n_range = range(2 * N * N, 5 * N * N + 5, int(0.2 * N * N + 1))
+# n_range = range(2 * N * N, 2 * N * N + 205, N * N)
 for n in n_range:
     KL = []
     for i in range(0, SampNum):
@@ -87,6 +92,11 @@ plt.legend([eta_actual, eta_wc, eta_Sanov], ["theoretical (actual) value", \
                                              "estimated by Sanov's theorem"])
 plt.xlabel('$n$ (number of samples)')
 plt.ylabel('$\eta$ (threshold)')
-pylab.xlim(2 * N * N - 5, 5 * N * N + 5)
-savefig('/home/jzh/Dropbox/Research/Anomaly_Detection/Experimental_Results/N_8.eps')
+# pylab.xlim(2 * N * N - 2, 20 * N * N + 5)
+pylab.xlim(2 * N * N - 5, 5 * N * N + 10)
+# savefig('/home/jzh/Dropbox/Research/Anomaly_Detection/Experimental_Results/N_2.eps')
+# pylab.xlim(2 * N * N - 5, 2 * N * N + 205)
+# savefig('/home/jzh/Dropbox/Research/Anomaly_Detection/Experimental_Results/N_3.eps')
+savefig('/home/jzh/Dropbox/Research/Anomaly_Detection/Experimental_Results/N_12.eps')
+
 plt.show()

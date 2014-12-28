@@ -13,6 +13,9 @@ import numpy as np
 from numpy import linalg as LA
 from math import log
 from matplotlib.mlab import prctile
+import matplotlib.pyplot as plt
+from pylab import *
+import pylab
 
 import sys
 import os
@@ -29,9 +32,7 @@ if not ROOT.endswith('TAHTMA'):
 sys.path.insert(0, ROOT)
 sys.path.insert(0, ROOT.rstrip('TAHTMA'))
 
-from TAHTMA.util.HoeffdingRuleModelBased import mu_ini, probability_matrix_Q, chain, HoeffdingRuleMarkov
-from TAHTMA.util.HoeffdingRuleModelBased import P_est, Q_est, G_est, H_est, Sigma_est, W_est, mu_est, KL_est
-
+from TAHTMA.util.HoeffdingRuleModelBased import *
 
 N = 8
 mu_0 = mu_ini(N**2)  # the initial distribution
@@ -40,36 +41,52 @@ P = P_est(Q)  # the new transition matrix
 PP = LA.matrix_power(P, 1000)
 mu = PP[0, :]  # the actual stationary distribution; 1 x (N**2)
 
-
-n_1 = 100 * N * N  # the length of a sample path
+n_1 = 1000 * N * N  # the length of a sample path
 
 # Get a sample path of the Markov chain with length n_1; this path is used to estimate the stationary distribution
 x_1 = chain(mu, P, n_1)
 
 mu_1 = mu_est(x_1, N)  # Get the estimated stationary distribution
 
-n = 100
-
-SampNum = 1000
-beta = 0.001
-
-KL = []
-for i in range(0, SampNum):
-    x = chain(mu, P, n)
-    mu = np.reshape(mu, (N, N))
-    KL.append(KL_est(x, mu))  # Get the actual relative entropy (K-L divergence)
-eta_actual = prctile(KL, 100 * (1 - beta))
-print eta_actual
-
 Q_1 = Q_est(mu_1)  # Get the estimate of Q
 P_1 = P_est(Q_1)  # Get the estimate of P
 G_1 = G_est(Q_1)  # Get the estimate of the gradient
 H_1 = H_est(mu_1)  # Get the estimate of the Hessian
 Sigma = Sigma_est(P_1, mu_1)  # Get the estimate of the covariance matrix
+SampNum = 1000
 W = W_est(Sigma, SampNum)  # Get a sample path of W
 
-eta = HoeffdingRuleMarkov(beta, G_1, H_1, W, n)
-print eta
+beta = 0.001
 
-eta_Sanov = - log(beta) / n
-print eta_Sanov
+eta_actual = []
+eta = []
+eta_Sanov = []
+n_range = range(2 * N * N, 5 * N * N + 5, int(0.2 * N * N + 1))
+for n in n_range:
+    KL = []
+    for i in range(0, SampNum):
+        x = chain(mu, P, n)
+        mu = np.reshape(mu, (N, N))
+        KL.append(KL_est(x, mu))  # Get the actual relative entropy (K-L divergence)
+    eta_actual.append(prctile(KL, 100 * (1 - beta)))
+    # print eta_actual
+
+    eta.append(HoeffdingRuleMarkov(beta, G_1, H_1, W, n))
+    # print eta
+
+    eta_Sanov.append(- log(beta) / n)
+    # print eta_Sanov
+
+
+eta_actual, = plt.plot(n_range, eta_actual, "r.-")
+eta_wc, = plt.plot(n_range, eta, "bs-")
+eta_Sanov, = plt.plot(n_range, eta_Sanov, "go-")
+
+plt.legend([eta_actual, eta_wc, eta_Sanov], ["theoretical (actual) value", \
+                                             "estimated by weak convergence analysis", \
+                                             "estimated by Sanov's theorem"])
+plt.xlabel('$n$ (number of samples)')
+plt.ylabel('$\eta$ (threshold)')
+pylab.xlim(2 * N * N - 5, 5 * N * N + 5)
+savefig('/home/jzh/Dropbox/Research/Anomaly_Detection/Experimental_Results/N_8.eps')
+plt.show()

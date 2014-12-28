@@ -301,7 +301,6 @@ def Sigma_est(P, mu):
     Sigma = np.dot(np.dot(Q, D), LA.inv(Q))
     return Sigma
 
-
 def W_est(Sigma, SampNum):
     """
     Generate samples of W
@@ -315,7 +314,6 @@ def W_est(Sigma, SampNum):
     W = np.random.multivariate_normal(W_mean[0, :], Sigma, (1, SampNum))
 
     return W
-
 
 def HoeffdingRuleMarkov(beta, G, H, W, FlowNum):
     """
@@ -340,4 +338,3 @@ def HoeffdingRuleMarkov(beta, G, H, W, FlowNum):
     eta = prctile(KL, 100 * (1 - beta))
 
     return eta
-

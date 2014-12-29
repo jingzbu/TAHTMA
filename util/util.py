@@ -3,10 +3,17 @@
 """
 from __future__ import absolute_import, division
 
+__author__ = "Jing Zhang"
+__email__ = "jingzbu@gmail.com"
+__status__ = "Development"
+
 import numpy as np
 from numpy import linalg as LA
 from math import sqrt, log
 from matplotlib.mlab import prctile
+import matplotlib.pyplot as plt
+import pylab
+from pylab import *
 
 
 def rand_x(p):
@@ -338,3 +345,74 @@ def HoeffdingRuleMarkov(beta, G, H, W, FlowNum):
     eta = prctile(KL, 100 * (1 - beta))
 
     return eta
+
+def ChainGen(N, beta):
+    # Get the initial distribution mu_0
+        mu_0 = mu_ini(N**2)
+
+    # Get the original transition matrix Q
+        Q = probability_matrix_Q(N)
+
+    # Get the new transition matrix P
+        P = P_est(Q)
+
+    # Get the actual stationary distribution mu; 1 x (N**2)
+        PP = LA.matrix_power(P, 1000)
+        mu = PP[0, :]
+
+    # Get a sample path of the Markov chain with length n_1; this path is used to estimate the stationary distribution
+        n_1 = 1000 * N * N  # the length of a sample path
+        x_1 = chain(mu_0, P, n_1)
+
+    # Get the estimated stationary distribution mu_1
+        mu_1 = mu_est(x_1, N)
+
+    # Get the estimate of Q
+        Q_1 = Q_est(mu_1)
+
+    # Get the estimate of P
+        P_1 = P_est(Q_1)
+
+    # Get the estimate of the gradient
+        G_1 = G_est(Q_1)
+
+    # Get the estimate of the Hessian
+        H_1 = H_est(mu_1)
+
+    # Get the estimate of the covariance matrix
+        Sigma_1 = Sigma_est(P_1, mu_1)
+
+    # Get an estimated sample path of W
+        SampNum = 1000
+        W_1 = W_est(Sigma_1, SampNum)
+
+        return mu_0, mu, mu_1, P, G_1, H_1, W_1
+
+from ..Simulator.ThresCalc import ThresSanov, ThresActual, ThresWeakConv
+def visualization(N, beta):
+    mu_0, mu, mu_1, P, G_1, H_1, W_1 = ChainGen(N, beta)
+    eta_actual = []
+    eta_wc = []
+    eta_Sanov = []
+    # n_range = range(2 * N * N, 20 * N * N + 5, N * N)
+    n_range = range(2 * N * N, 6 * N * N + 5, int(0.2 * N * N + 1))
+    # n_range = range(2 * N * N, 2 * N * N + 205, N * N)
+    for n in n_range:
+        eta_actual.append(ThresActual(N, beta, n, mu_0, mu, mu_1, P, G_1, H_1, W_1).ThresCal())
+        eta_wc.append(ThresWeakConv(N, beta, n, mu_0, mu, mu_1, P, G_1, H_1, W_1).ThresCal())
+        eta_Sanov.append(ThresSanov(N, beta, n, mu_0, mu, mu_1, P, G_1, H_1, W_1).ThresCal())
+
+    eta_actual, = plt.plot(n_range, eta_actual, "r.-")
+    eta_wc, = plt.plot(n_range, eta_wc, "bs-")
+    eta_Sanov, = plt.plot(n_range, eta_Sanov, "go-")
+
+    plt.legend([eta_actual, eta_wc, eta_Sanov], ["theoretical (actual) value", \
+                                                    "estimated by weak convergence analysis", \
+                                                    "estimated by Sanov's theorem"])
+    plt.xlabel('$n$ (number of samples)')
+    plt.ylabel('$\eta$ (threshold)')
+    plt.title('Threshold ($\eta$) versus Number of samples ($n$)')
+    pylab.xlim(2 * N * N - 2, 6 * N * N + 5)
+    pylab.ylim(0, 1)
+    savefig('./Results/test.eps')
+    plt.show()

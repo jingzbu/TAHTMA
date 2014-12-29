@@ -7,6 +7,7 @@ __author__ = "Jing Zhang"
 __email__ = "jingzbu@gmail.com"
 __status__ = "Development"
 
+import argparse
 import numpy as np
 from numpy import linalg as LA
 from math import sqrt, log
@@ -389,30 +390,38 @@ def ChainGen(N, beta):
     return mu_0, mu, mu_1, P, G_1, H_1, W_1
 
 from ..Simulator.ThresCalc import ThresSanov, ThresActual, ThresWeakConv
-def visualization(N, beta):
-    mu_0, mu, mu_1, P, G_1, H_1, W_1 = ChainGen(N, beta)
-    eta_actual = []
-    eta_wc = []
-    eta_Sanov = []
-    # n_range = range(2 * N * N, 20 * N * N + 5, N * N)
-    n_range = range(2 * N * N, 6 * N * N + 5, int(0.2 * N * N + 1))
-    # n_range = range(2 * N * N, 2 * N * N + 205, N * N)
-    for n in n_range:
-        eta_actual.append(ThresActual(N, beta, n, mu_0, mu, mu_1, P, G_1, H_1, W_1).ThresCal())
-        eta_wc.append(ThresWeakConv(N, beta, n, mu_0, mu, mu_1, P, G_1, H_1, W_1).ThresCal())
-        eta_Sanov.append(ThresSanov(N, beta, n, mu_0, mu, mu_1, P, G_1, H_1, W_1).ThresCal())
+class visualization:
+    def __init__(self, parser):
+        self.parser = parser
 
-    eta_actual, = plt.plot(n_range, eta_actual, "r.-")
-    eta_wc, = plt.plot(n_range, eta_wc, "bs-")
-    eta_Sanov, = plt.plot(n_range, eta_Sanov, "go-")
+    def run(self):
+        args = self.parser
+        N = args.N
+        beta = args.beta
+        save_fig_addr = args.save_fig_addr
+        mu_0, mu, mu_1, P, G_1, H_1, W_1 = ChainGen(N, beta)
+        eta_actual = []
+        eta_wc = []
+        eta_Sanov = []
+        # n_range = range(2 * N * N, 20 * N * N + 5, N * N)
+        n_range = range(2 * N * N, 6 * N * N + 5, int(0.2 * N * N + 1))
+        # n_range = range(2 * N * N, 2 * N * N + 205, N * N)
+        for n in n_range:
+            eta_actual.append(ThresActual(N, beta, n, mu_0, mu, mu_1, P, G_1, H_1, W_1).ThresCal())
+            eta_wc.append(ThresWeakConv(N, beta, n, mu_0, mu, mu_1, P, G_1, H_1, W_1).ThresCal())
+            eta_Sanov.append(ThresSanov(N, beta, n, mu_0, mu, mu_1, P, G_1, H_1, W_1).ThresCal())
 
-    plt.legend([eta_actual, eta_wc, eta_Sanov], ["theoretical (actual) value", \
-                                                    "estimated by weak convergence analysis", \
-                                                    "estimated by Sanov's theorem"])
-    plt.xlabel('$n$ (number of samples)')
-    plt.ylabel('$\eta$ (threshold)')
-    plt.title('Threshold ($\eta$) versus Number of samples ($n$)')
-    pylab.xlim(2 * N * N - 2, 6 * N * N + 5)
-    pylab.ylim(0, 1)
-    savefig('./Results/test.eps')
-    plt.show()
+        eta_actual, = plt.plot(n_range, eta_actual, "r.-")
+        eta_wc, = plt.plot(n_range, eta_wc, "bs-")
+        eta_Sanov, = plt.plot(n_range, eta_Sanov, "go-")
+
+        plt.legend([eta_actual, eta_wc, eta_Sanov], ["theoretical (actual) value", \
+                                                        "estimated by weak convergence analysis", \
+                                                        "estimated by Sanov's theorem"])
+        plt.xlabel('$n$ (number of samples)')
+        plt.ylabel('$\eta$ (threshold)')
+        plt.title('Threshold ($\eta$) versus Number of samples ($n$)')
+        pylab.xlim(2 * N * N - 2, 6 * N * N + 5)
+        pylab.ylim(0, 1)
+        savefig(save_fig_addr)
+        plt.show()

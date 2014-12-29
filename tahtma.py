@@ -13,6 +13,8 @@ __status__ = "Development"
 import sys
 import os
 
+import argparse
+
 ROOT = os.environ.get('tahtma_ROOT')
 if ROOT is None:
     print('Please set <tahtma_ROOT> variable in bash.')
@@ -28,5 +30,13 @@ sys.path.insert(0, ROOT.rstrip('TAHTMA'))
 
 from TAHTMA.util.util import visualization
 
-N, beta= map(float, sys.argv[1:3])
-visualization(int(N), beta)
+parser = argparse.ArgumentParser()
+
+parser.add_argument("--beta", default=0.001, type=float, help="false alarm rate for Hoeffding rule")
+parser.add_argument("--N", default=4, type=int, help="# of states in the original chain")
+parser.add_argument("--save_fig_addr", default='./Results/res.eps', type=str, help="address for saving the output plot")
+
+args = parser.parse_args()
+
+test = visualization(args)
+test.run()

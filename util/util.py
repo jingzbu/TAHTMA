@@ -398,7 +398,7 @@ class visualization:
         args = self.parser
         N = args.N
         beta = args.beta
-        save_fig_addr = args.save_fig_addr
+        fig_dir = args.fig_dir
         mu_0, mu, mu_1, P, G_1, H_1, W_1 = ChainGen(N, beta)
         eta_actual = []
         eta_wc = []
@@ -423,5 +423,5 @@ class visualization:
         plt.title('Threshold ($\eta$) versus Number of samples ($n$)')
         pylab.xlim(2 * N * N - 2, 6 * N * N + 5)
         pylab.ylim(0, 1)
-        savefig(save_fig_addr)
+        savefig(fig_dir)
         plt.show()

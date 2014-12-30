@@ -32,9 +32,9 @@ from TAHTMA.util.util import visualization
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("--beta", default=0.001, type=float, help="false alarm rate for Hoeffding rule")
-parser.add_argument("--N", default=4, type=int, help="# of states in the original chain")
-parser.add_argument("--save_fig_addr", default='./Results/res.eps', type=str, help="address for saving the output plot")
+parser.add_argument("--beta", default=0.001, type=float, help="false alarm rate for Hoeffding's rule")
+parser.add_argument("--N", default=4, type=int, help="number of states in the original Markov chain")
+parser.add_argument("--fig_dir", default='./Results/res.eps', type=str, help="folder for saving the output plot")
 
 args = parser.parse_args()
 

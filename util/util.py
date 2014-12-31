@@ -343,7 +343,7 @@ def HoeffdingRuleMarkov(beta, G, H, W, FlowNum):
                 (1.0 / 2) * (1.0 / FlowNum) * \
                     np.dot(np.dot(W[0, j, :], H), W[0, j, :])
         KL.append(t)
-    eta = prctile(KL, 100 * (1 - beta))
+    eta = (prctile(KL, 100 * (1 - beta))).real
 
     return eta
 
@@ -411,9 +411,11 @@ class visualization:
             eta_wc.append(ThresWeakConv(N, beta, n, mu_0, mu, mu_1, P, G_1, H_1, W_1).ThresCal())
             eta_Sanov.append(ThresSanov(N, beta, n, mu_0, mu, mu_1, P, G_1, H_1, W_1).ThresCal())
 
-        eta_actual, = plt.plot(n_range, eta_actual, "r.-")
+        np.savez(fig_dir + 'eta.npz', n_range=n_range, eta_actual=eta_actual, eta_wc=eta_wc, eta_Sanov=eta_Sanov)
+
+        eta_actual, = plt.plot(n_range, eta_actual, "ro-")
         eta_wc, = plt.plot(n_range, eta_wc, "bs-")
-        eta_Sanov, = plt.plot(n_range, eta_Sanov, "go-")
+        eta_Sanov, = plt.plot(n_range, eta_Sanov, "g^-")
 
         plt.legend([eta_actual, eta_wc, eta_Sanov], ["theoretical (actual) value", \
                                                         "estimated by weak convergence analysis", \
@@ -421,7 +423,7 @@ class visualization:
         plt.xlabel('$n$ (number of samples)')
         plt.ylabel('$\eta$ (threshold)')
         plt.title('Threshold ($\eta$) versus Number of samples ($n$)')
-        pylab.xlim(2 * N * N - 2, 6 * N * N + 5)
-        pylab.ylim(0, 1)
-        savefig(fig_dir)
-        plt.show()
+        pylab.xlim(np.amin(n_range) - 1, np.amax(n_range) + 1)
+        # pylab.ylim(0, 1)
+        savefig(fig_dir + 'eta_comp.eps')
+        # plt.show()

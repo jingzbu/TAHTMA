@@ -6,7 +6,7 @@ TAHTMA is short for Threshold Approximation for Hoeffding Test under Markovian A
 
 Usage
 =====
-Assuming having set <tahtma_ROOT> path variable correctly, then type `./tahtma -h` to get the following help message:
+Assuming having set `tahtma_ROOT` path variable correctly, then type `./tahtma -h` to get the following help message:
 ```
 usage: tahtma [-h] [--beta BETA] [--N N] [--fig_dir FIG_DIR]
               [--show_pic SHOW_PIC]
@@ -38,9 +38,9 @@ Jing Zhang
 Jing Zhang currently is a PhD student in Division of Systems Engineering at Boston University, working with Professor [Yannis Paschalidis](http://ionia.bu.edu/).
 
 
-EMail: jzh AT bu.edu
+Email: jzh AT bu.edu
 
-Personal Webpage: http://people.bu.edu/jzh/
+Homepage: http://people.bu.edu/jzh/
 
 
 Copyright 2014-2015 Jing Zhang. All rights reserved. TAHTMA is free software; you can redistribute it and/or modify it under

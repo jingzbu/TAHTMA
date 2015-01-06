@@ -407,9 +407,17 @@ class visualization:
         n_range = range(2 * N * N, 6 * N * N + 5, int(0.2 * N * N + 1))
         # n_range = range(2 * N * N, 2 * N * N + 205, N * N)
         for n in n_range:
-            eta_actual.append(ThresActual(N, beta, n, mu_0, mu, mu_1, P, G_1, H_1, W_1).ThresCal())
-            eta_wc.append(ThresWeakConv(N, beta, n, mu_0, mu, mu_1, P, G_1, H_1, W_1).ThresCal())
-            eta_Sanov.append(ThresSanov(N, beta, n, mu_0, mu, mu_1, P, G_1, H_1, W_1).ThresCal())
+	    eta_1 = ThresActual(N, beta, n, mu_0, mu, mu_1, P, G_1, H_1, W_1).ThresCal()
+	    eta_2 = ThresWeakConv(N, beta, n, mu_0, mu, mu_1, P, G_1, H_1, W_1).ThresCal()
+	    eta_3 = ThresSanov(N, beta, n, mu_0, mu, mu_1, P, G_1, H_1, W_1).ThresCal()
+            eta_actual.append(eta_1)
+            eta_wc.append(eta_2)
+            eta_Sanov.append(eta_3)
+	    print('--> Number of samples: %d'%n)
+	    print('--> Actual threshold: %f'%eta_1)
+            print('--> Estimated threshold (by weak convergence): %f'%eta_2)
+	    print("--> Estimated threshold (by Sanov's theorem): %f"%eta_3)
+ 	    print('-------------------------------------------------------')
 
         np.savez(fig_dir + 'eta.npz', n_range=n_range, eta_actual=eta_actual, eta_wc=eta_wc, eta_Sanov=eta_Sanov)
 
@@ -426,4 +434,6 @@ class visualization:
         pylab.xlim(np.amin(n_range) - 1, np.amax(n_range) + 1)
         # pylab.ylim(0, 1)
         savefig(fig_dir + 'eta_comp.eps')
-        # plt.show()
+        if args.show_pic=='T':
+	    print('--> export result to %s'%(fig_dir + 'eta_comp.eps'))
+	    plt.show()

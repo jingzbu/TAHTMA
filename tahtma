@@ -37,7 +37,7 @@ parser.add_argument("--N", default=4, type=int, help="number of states in the or
 parser.add_argument("--fig_dir", default='./Results/', type=str, \
                     help="folder for saving the output plot; default='./Results/'")
 parser.add_argument("--show_pic", default='F', type=str, \
-                    help="whether or not to show the output plot; use 'T' or 'F' to indicate; default='F'")
+                    help="whether or not to show the output plot; indicated by 'T' or 'F'; default='F'")
 args = parser.parse_args()
 
 test = visualization(args)

@@ -17,8 +17,8 @@ optional arguments:
   --N N                number of states in the original Markov chain;
                        default=4
   --fig_dir FIG_DIR    folder for saving the output plot; default='./Results/'
-  --show_pic SHOW_PIC  whether or not to show the output plot; use 'T' or 'F'
-                       to indicate; default='F'
+  --show_pic SHOW_PIC  whether or not to show the output plot; indicated by
+                       'T' or 'F'; default='F'
 ```
 
 Examples:

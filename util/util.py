@@ -325,7 +325,7 @@ def W_est(Sigma, SampNum):
 
 def HoeffdingRuleMarkov(beta, G, H, W, FlowNum):
     """
-    Estimate the covariance matrix of the empirical measure
+    Estimate the K-L divergence and the threshold by use of weak convergence
     ----------------
     beta: the false alarm rate
     G: the gradient
@@ -342,10 +342,13 @@ def HoeffdingRuleMarkov(beta, G, H, W, FlowNum):
         t = (1.0 / sqrt(FlowNum)) * np.dot(G, W[0, j, :]) + \
                 (1.0 / 2) * (1.0 / FlowNum) * \
                     np.dot(np.dot(W[0, j, :], H), W[0, j, :])
-        KL.append(t)
-    eta = (prctile(KL, 100 * (1 - beta))).real
-
-    return eta
+        # print t.tolist()
+        # break
+        KL.append(np.array(t.real)[0])
+    eta = prctile(KL, 100 * (1 - beta))
+    # print(KL)
+    # assert(1 == 2)
+    return KL, eta
 
 def ChainGen(N, beta):
     # Get the initial distribution mu_0
@@ -389,7 +392,10 @@ def ChainGen(N, beta):
 
     return mu_0, mu, mu_1, P, G_1, H_1, W_1
 
+
 from ..Simulator.ThresCalc import ThresSanov, ThresActual, ThresWeakConv
+import statsmodels.api as sm  # recommended import according to the docs
+
 class visualization:
     def __init__(self, parser):
         self.parser = parser
@@ -400,6 +406,8 @@ class visualization:
         beta = args.beta
         fig_dir = args.fig_dir
         mu_0, mu, mu_1, P, G_1, H_1, W_1 = ChainGen(N, beta)
+        KL_actual = []
+        KL_wc = []
         eta_actual = []
         eta_wc = []
         eta_Sanov = []
@@ -407,33 +415,57 @@ class visualization:
         n_range = range(2 * N * N, 6 * N * N + 5, int(0.2 * N * N + 1))
         # n_range = range(2 * N * N, 2 * N * N + 205, N * N)
         for n in n_range:
-	    eta_1 = ThresActual(N, beta, n, mu_0, mu, mu_1, P, G_1, H_1, W_1).ThresCal()
-	    eta_2 = ThresWeakConv(N, beta, n, mu_0, mu, mu_1, P, G_1, H_1, W_1).ThresCal()
-	    eta_3 = ThresSanov(N, beta, n, mu_0, mu, mu_1, P, G_1, H_1, W_1).ThresCal()
+            KL_1, eta_1 = ThresActual(N, beta, n, mu_0, mu, mu_1, P, G_1, H_1, W_1).ThresCal()
+            KL_2, eta_2 = ThresWeakConv(N, beta, n, mu_0, mu, mu_1, P, G_1, H_1, W_1).ThresCal()
+            eta_3 = ThresSanov(N, beta, n, mu_0, mu, mu_1, P, G_1, H_1, W_1).ThresCal()
+            KL_actual.append(KL_1)
+            KL_wc.append(KL_2)
             eta_actual.append(eta_1)
             eta_wc.append(eta_2)
             eta_Sanov.append(eta_3)
-	    print('--> Number of samples: %d'%n)
-	    print('--> Actual threshold: %f'%eta_1)
+            print('--> Number of samples: %d'%n)
+            print('--> Actual threshold: %f'%eta_1)
             print('--> Estimated threshold (by weak convergence): %f'%eta_2)
-	    print("--> Estimated threshold (by Sanov's theorem): %f"%eta_3)
- 	    print('-------------------------------------------------------')
+            print("--> Estimated threshold (by Sanov's theorem): %f"%eta_3)
+            print('-------------------------------------------------------')
 
-        np.savez(fig_dir + 'eta.npz', n_range=n_range, eta_actual=eta_actual, eta_wc=eta_wc, eta_Sanov=eta_Sanov)
+        np.savez(fig_dir + 'eta_KL.npz', n_range=n_range, KL_actual=KL_actual, KL_wc=KL_wc, eta_actual=eta_actual, \
+                 eta_wc=eta_wc, eta_Sanov=eta_Sanov)
 
-        eta_actual, = plt.plot(n_range, eta_actual, "ro-")
-        eta_wc, = plt.plot(n_range, eta_wc, "bs-")
-        eta_Sanov, = plt.plot(n_range, eta_Sanov, "g^-")
+        if args.e == 'cdf':
+            ecdf_1 = sm.distributions.ECDF(KL_1)
+            x_1 = np.linspace(min(KL_1), max(KL_1), num=100)
+            y_1 = ecdf_1(x_1)
 
-        plt.legend([eta_actual, eta_wc, eta_Sanov], ["theoretical (actual) value", \
-                                                        "estimated by weak convergence analysis", \
-                                                        "estimated by Sanov's theorem"])
-        plt.xlabel('$n$ (number of samples)')
-        plt.ylabel('$\eta$ (threshold)')
-        plt.title('Threshold ($\eta$) versus Number of samples ($n$)')
-        pylab.xlim(np.amin(n_range) - 1, np.amax(n_range) + 1)
-        # pylab.ylim(0, 1)
-        savefig(fig_dir + 'eta_comp.eps')
-        if args.show_pic=='T':
-	    print('--> export result to %s'%(fig_dir + 'eta_comp.eps'))
-	    plt.show()
+            ecdf_2 = sm.distributions.ECDF(np.array(KL_2).tolist())
+            x_2 = np.linspace(min(KL_2), max(KL_2), num=100)
+            y_2 = ecdf_2(x_2)
+
+            KL_actual, = plt.plot(x_1, y_1, "r")
+            KL_wc, = plt.plot(x_2, y_2, "b--")
+
+            plt.legend([KL_actual, KL_wc], ["actual", "estimated"], loc=4)
+            plt.title('Empirical CDF of the relative entropy ($N = %d$, $n = %d$)'%(N, n))
+
+            pylab.ylim(0, 1.01)
+
+            savefig(fig_dir + 'CDF_comp.eps')
+            if args.show_pic=='T':
+                plt.show()
+        elif args.e == 'eta':
+            eta_actual, = plt.plot(n_range, eta_actual, "ro-")
+            eta_wc, = plt.plot(n_range, eta_wc, "bs-")
+            eta_Sanov, = plt.plot(n_range, eta_Sanov, "g^-")
+
+            plt.legend([eta_actual, eta_wc, eta_Sanov], ["theoretical (actual) value", \
+                                                            "estimated by weak convergence analysis", \
+                                                            "estimated by Sanov's theorem"])
+            plt.xlabel('$n$ (number of samples)')
+            plt.ylabel('$\eta$ (threshold)')
+            plt.title('Threshold ($\eta$) versus Number of samples ($n$)')
+            pylab.xlim(np.amin(n_range) - 1, np.amax(n_range) + 1)
+            # pylab.ylim(0, 1)
+            savefig(fig_dir + 'eta_comp.eps')
+            if args.show_pic=='T':
+                print('--> export result to %s'%(fig_dir + 'eta_comp.eps'))
+                plt.show()

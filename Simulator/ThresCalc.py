@@ -32,26 +32,28 @@ class ThresBase(object):
         self.W_1 = W_1
 
 class ThresActual(ThresBase):
-    """ Computing the actual (theoretical) threshold
+    """ Computing the actual (theoretical) K-L divergence and threshold
     """
     def ThresCal(self):
         SampNum = 1000
-        KL = []
+        self.KL = []
         for i in range(0, SampNum):
             x = chain(self.mu_0, self.P, self.n)
             mu = np.reshape(self.mu, (self.N, self.N))
-            KL.append(KL_est(x, mu))  # Get the actual relative entropy (K-L divergence)
-        self.eta = prctile(KL, 100 * (1 - self.beta))
+            self.KL.append(KL_est(x, mu))  # Get the actual relative entropy (K-L divergence)
+        self.eta = prctile(self.KL, 100 * (1 - self.beta))
+        KL = self.KL
         eta = self.eta
-        return eta
+        return KL, eta
 
 class ThresWeakConv(ThresBase):
     """ Estimating the threshold by use of weak convergence
     """
     def ThresCal(self):
-        self.eta = HoeffdingRuleMarkov(self.beta, self.G_1, self.H_1, self.W_1, self.n)
+        self.KL, self.eta = HoeffdingRuleMarkov(self.beta, self.G_1, self.H_1, self.W_1, self.n)
+        KL = self.KL
         eta = self.eta
-        return eta
+        return KL, eta
 
 class ThresSanov(ThresBase):
     """ Estimating the threshold by use of Sanov's theorem

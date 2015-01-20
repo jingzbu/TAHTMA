@@ -14,6 +14,8 @@ eta_actual = eta['eta_actual']
 eta_wc = eta['eta_wc']
 eta_Sanov = eta['eta_Sanov']
 
+eta.close()
+
 print n_range
 print eta_actual
 print eta_wc
@@ -33,6 +35,3 @@ pylab.xlim(np.amin(n_range) - 7, np.amax(n_range) + 7)
 # pylab.ylim(0, 0.4)
 savefig(dir + '/N_12/eta_comp.eps')
 plt.show()
-
-
-eta.close()

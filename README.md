@@ -27,7 +27,7 @@ Examples:
 
  `$ ./tahtma -beta 0.1 --N 3`
  
- `./tahtma -e cdf -beta 0.01 -N 3 -show_pic T`
+ `$ ./tahtma -e cdf -beta 0.01 -N 3 -show_pic T`
 
  `$ ./tahtma -beta 0.01 --N 4 -show_pic T`
 
@@ -42,11 +42,10 @@ Jing Zhang
 Jing Zhang currently is a PhD student in Division of Systems Engineering at Boston University, working with Professor [Yannis Paschalidis](http://ionia.bu.edu/).
 
 
-Email: jzh AT bu.edu
+Email: `jzh@bu.edu`
 
 Homepage: http://people.bu.edu/jzh/
 
 
 Copyright 2014-2015 Jing Zhang. All rights reserved. TAHTMA is free software; you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free Software Foundation.
-

@@ -47,7 +47,7 @@ class ThresActual(ThresBase):
         return KL, eta
 
 class ThresWeakConv(ThresBase):
-    """ Estimating the threshold by use of weak convergence
+    """ Estimating the K-L divergence and threshold by use of weak convergence
     """
     def ThresCal(self):
         self.KL, self.eta = HoeffdingRuleMarkov(self.beta, self.G_1, self.H_1, self.W_1, self.n)

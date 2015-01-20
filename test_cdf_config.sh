@@ -1,3 +1,4 @@
+#!/bin/sh
 python test_cdf.py -j 0
 python test_cdf.py -j 1
 python test_cdf.py -j 2

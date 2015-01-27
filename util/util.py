@@ -450,7 +450,7 @@ class visualization:
             pylab.ylim(0, 1.01)
 
             savefig(fig_dir + 'CDF_comp.eps')
-            if args.show_pic == 'T':
+            if args.show_pic:
                 plt.show()
         elif args.e == 'eta':
             eta_actual, = plt.plot(n_range, eta_actual, "ro-")
@@ -466,6 +466,6 @@ class visualization:
             pylab.xlim(np.amin(n_range) - 1, np.amax(n_range) + 1)
             # pylab.ylim(0, 1)
             savefig(fig_dir + 'eta_comp.eps')
-            if args.show_pic == 'T':
+            if args.show_pic:
                 print('--> export result to %s'%(fig_dir + 'eta_comp.eps'))
                 plt.show()

@@ -27,11 +27,11 @@ Examples:
 
  `$ ./tahtma -beta 0.1 -N 3`
  
- `$ ./tahtma -e cdf -beta 0.01 -N 3 -show_pic T`
+ `$ ./tahtma -e cdf -beta 0.01 -N 3 -show_pic`
 
- `$ ./tahtma -beta 0.01 -N 4 -show_pic T`
+ `$ ./tahtma -beta 0.01 -N 4 -show_pic`
 
- `$ ./tahtma -beta 0.0001 -N 5 -show_pic T`
+ `$ ./tahtma -beta 0.0001 -N 5 -show_pic`
 
 
 

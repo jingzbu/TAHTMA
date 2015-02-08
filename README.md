@@ -1,7 +1,7 @@
 TAHTMA
 ======
 
-TAHTMA is short for Threshold Approximation for Hoeffding Test under Markovian Assumption.
+TAHTMA is short for Threshold Approximation for Hoeffding's Test under Markovian Assumption.
 
 
 Usage

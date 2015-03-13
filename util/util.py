@@ -213,14 +213,15 @@ def G_est(Q):
     Estimate the Gradient
     Example
     ----------------
-    >>> mu = [[0.625,  0.125],  [0.125,  0.125]]
-    >>> print G_est(mu)
-    [[ 0.16666667  0.83333333  0.5         0.5       ]]
+    # >>> mu = [[0.625,  0.125],  [0.125,  0.125]]
+    # >>> print G_est(mu)
+    # [[ 0.16666667  0.83333333  0.5         0.5       ]]
     """
-    N, _ = Q.shape
-    assert(N == _)
-    alpha = 1 - Q
-    G = alpha.reshape(1, N**2)
+    # N, _ = Q.shape
+    # assert(N == _)
+    # alpha = 1 - Q
+    # G = alpha.reshape(1, N**2)
+    G = 0
 
     return G
 
@@ -249,11 +250,9 @@ def H_est(mu):
                     if k != i:
                         H[i, j, k, l] = 0
                     elif l == j:
-                        H[i, j, k, l] = 1 / mu[i, j] - 1 / (sum(mu[i, :])) - \
-                        ((sum(mu[i, :])) - mu[i, j]) / ((sum(mu[i, :]))**2)
+                        H[i, j, k, l] = 1 / mu[i, j] - 1 / (sum(mu[i, :]))
                     else:
-                        H[i, j, k, l] = - ((sum(mu[i, :])) - mu[i, j]) / \
-                            ((sum(mu[i, :]))**2)
+                        H[i, j, k, l] = - 1 / (sum(mu[i, :]))
 
     H = np.reshape(H, (N**2, N**2))
 

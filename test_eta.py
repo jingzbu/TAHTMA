@@ -25,13 +25,13 @@ eta_actual, = plt.plot(n_range, eta_actual, "ro-")
 eta_wc, = plt.plot(n_range, eta_wc, "bs-")
 eta_Sanov, = plt.plot(n_range, eta_Sanov, "g^-")
 
-plt.legend([eta_actual, eta_wc, eta_Sanov], ["theoretical (actual) value", \
-                                                "estimated by weak convergence analysis", \
-                                                "estimated by Sanov's theorem"])
+plt.legend([eta_actual, eta_wc, eta_Sanov], ["$\eta_n$ (actual value)", \
+                                                "$\eta_n^{wc}$ (estimated by WC result)", \
+                                                "$\eta_n^{sv}$ (estimated by Sanov's theorem)"])
 plt.xlabel('$n$ (number of samples)')
 plt.ylabel('$\eta$ (threshold)')
-plt.title('Threshold ($\eta$) versus Number of samples ($n$)')
+# plt.title('Threshold ($\eta$) versus Number of samples ($n$)')
 pylab.xlim(np.amin(n_range) - 7, np.amax(n_range) + 7)
 # pylab.ylim(0, 0.4)
-savefig(dir + '/N_12/eta_comp.eps')
+savefig(dir + '/N_12/eta_comp_N_12.eps')
 plt.show()

@@ -6,7 +6,7 @@ from pylab import *
 
 dir = '/home/jzh/Dropbox/Research/Anomaly_Detection/Experimental_Results'
 
-eta = np.load(dir + '/N_12/eta.npz')
+eta = np.load(dir + '/N_7/eta_KL.npz')
 
 
 n_range = eta['n_range']
@@ -31,7 +31,7 @@ plt.legend([eta_actual, eta_wc, eta_Sanov], ["$\eta_n$ (actual value)", \
 plt.xlabel('$n$ (number of samples)')
 plt.ylabel('$\eta$ (threshold)')
 # plt.title('Threshold ($\eta$) versus Number of samples ($n$)')
-pylab.xlim(np.amin(n_range) - 7, np.amax(n_range) + 7)
+pylab.xlim(np.amin(n_range) - 3, np.amax(n_range) + 3)
 # pylab.ylim(0, 0.4)
-savefig(dir + '/N_12/eta_comp_N_12.eps')
+savefig(dir + '/N_7/eta_comp_N_7.eps')
 plt.show()

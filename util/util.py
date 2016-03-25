@@ -456,15 +456,15 @@ class visualization:
             eta_wc, = plt.plot(n_range, eta_wc, "bs-")
             eta_Sanov, = plt.plot(n_range, eta_Sanov, "g^-")
 
-            plt.legend([eta_actual, eta_wc, eta_Sanov], ["theoretical (actual) value", \
-                                                            "estimated by weak convergence analysis", \
+            plt.legend([eta_actual, eta_wc, eta_Sanov], ["a proxy of actual value", \
+                                                            "estimated by WC result", \
                                                             "estimated by Sanov's theorem"])
             plt.xlabel('$n$ (number of samples)')
-            plt.ylabel('$\eta$ (threshold)')
-            plt.title('Threshold ($\eta$) versus Number of samples ($n$)')
+            plt.ylabel('$\eta_n$ (threshold)')
+            # plt.title('Threshold ($\eta$) versus Number of samples ($n$)')
             pylab.xlim(np.amin(n_range) - 1, np.amax(n_range) + 1)
-            # pylab.ylim(0, 1)
-            savefig(fig_dir + 'eta_comp.eps')
+            pylab.ylim(0, 1)
+            savefig(fig_dir + 'eta_comp_N_%s.eps'%N)
             if args.show_pic:
-                print('--> export result to %s'%(fig_dir + 'eta_comp.eps'))
+                print('--> export result to %s'%(fig_dir + 'eta_comp_N_%s.eps'%N))
                 plt.show()

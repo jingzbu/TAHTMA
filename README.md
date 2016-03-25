@@ -5,7 +5,7 @@ TAHTMA is short for Threshold Approximation for Hoeffding's Test under Markovian
 
 If you are interested in our recent publication (see below) on network anomaly detection and want to use it as reference, please cite the repository [TAHTMA](https://github.com/jingzbu/TAHTMA) together with:
 
-Jing Zhang and I. Ch. Paschalidis, "***An Improved Composite Hypothesis Test for Markov Models with Applications in Network Anomaly Detection***," Proceedings of the 54th IEEE Conference on Decision and Control, pp. 3810-3815, December 15-18, 2015, Osaka, Japan.
+Jing Zhang and I. Ch. Paschalidis, "***[An Improved Composite Hypothesis Test for Markov Models with Applications in Network Anomaly Detection](http://ieeexplore.ieee.org/xpl/articleDetails.jsp?arnumber=7402811&newsearch=true&queryText=An%20Improved%20Composite%20Hypothesis%20Test%20for%20Markov%20Models%20with%20Applications%20in%20Network%20Anomaly%20Detection)***," Proceedings of the 54th IEEE Conference on Decision and Control, pp. 3810-3815, December 15-18, 2015, Osaka, Japan.
 
 
 

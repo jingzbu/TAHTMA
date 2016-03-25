@@ -31,7 +31,7 @@ plt.legend([eta_actual, eta_wc, eta_Sanov], ["a proxy of actual value", \
                                                 "estimated by WC result", \
                                                 "estimated by Sanov's theorem"])
 plt.xlabel('$n$ (number of samples)')
-plt.ylabel('$\eta_n$ (threshold)')
+plt.ylabel('$\eta$ (threshold)')
 # plt.title('Threshold ($\eta$) versus Number of samples ($n$)')
 pylab.xlim(np.amin(n_range) - 2, np.amax(n_range) + 2)
 pylab.ylim(0, 0.5)

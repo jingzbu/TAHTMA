@@ -460,7 +460,7 @@ class visualization:
                                                             "estimated by WC result", \
                                                             "estimated by Sanov's theorem"])
             plt.xlabel('$n$ (number of samples)')
-            plt.ylabel('$\eta_n$ (threshold)')
+            plt.ylabel('$\eta$ (threshold)')
             # plt.title('Threshold ($\eta$) versus Number of samples ($n$)')
             pylab.xlim(np.amin(n_range) - 1, np.amax(n_range) + 1)
             pylab.ylim(0, 1)

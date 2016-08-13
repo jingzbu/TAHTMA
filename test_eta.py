@@ -23,9 +23,17 @@ print eta_actual
 print eta_wc
 print eta_Sanov
 
-eta_actual, = plt.plot(n_range, eta_actual, "ro-")
-eta_wc, = plt.plot(n_range, eta_wc, "bs-")
-eta_Sanov, = plt.plot(n_range, eta_Sanov, "g^-")
+font = {'family' : 'normal',
+        'weight' : 'normal',
+        'size'   : 26}
+
+plt.figure(figsize=(11,9))
+
+matplotlib.rc('font', **font)
+
+eta_actual, = plt.plot(n_range, eta_actual, "r-", linewidth=3.5)
+eta_wc, = plt.plot(n_range, eta_wc, "b-", linewidth=3.5)
+eta_Sanov, = plt.plot(n_range, eta_Sanov, "g-", linewidth=3.5)
 
 plt.legend([eta_actual, eta_wc, eta_Sanov], ["a proxy of actual value", \
                                                 "estimated by WC result", \
@@ -34,6 +42,7 @@ plt.xlabel('$n$ (number of samples)')
 plt.ylabel('$\eta$ (threshold)')
 # plt.title('Threshold ($\eta$) versus Number of samples ($n$)')
 pylab.xlim(np.amin(n_range) - 2, np.amax(n_range) + 2)
-pylab.ylim(0, 0.5)
+pylab.ylim(0.0, 0.7)
+# plt.grid()
 savefig(dir + '/N_%d/eta_comp_N_%d.eps'%(N,N))
 plt.show()

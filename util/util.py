@@ -11,6 +11,7 @@ import argparse
 import numpy as np
 from numpy import linalg as LA
 from math import sqrt, log
+from scipy.stats import chi2
 from matplotlib.mlab import prctile
 import matplotlib.pyplot as plt
 import pylab
@@ -322,32 +323,72 @@ def W_est(Sigma, SampNum):
 
     return W
 
-def HoeffdingRuleMarkov(beta, G, H, W, FlowNum):
+def EigCalc(H, Sigma):
+	"""
+	Calculate eigenvalues for the purpose of "chi-square" approximation
+	:param H: the Hessian
+	:param Sigma: the estimated covariance matrix
+	:return: the eigenvalues of (diag(mu))^(-1) * Sigma
+	"""
+	# print np.shape(H)
+	# print np.shape(Sigma)
+	# assert 1 == 2
+
+	rho = LA.eigvalsh(np.dot(H, Sigma))
+	# print mu
+	# print Sigma
+	# print muVec
+	# print np.shape(mu)
+	# print np.shape(Sigma)
+	# print np.diag(muVec)
+	# print rho
+	# assert 1 == 2
+	# print mean(rho)
+	return rho
+
+def ChiSampEst(rho, SampNum):
+	N = len(rho)
+	s_dict = {}
+	for i in xrange(N):
+		s_dict[i] = np.random.normal(0, 1, SampNum)
+	return [sum([rho[i] * (s_dict[i][idx] ** 2) for i in xrange(N)]) for idx in xrange(SampNum)]
+
+def HoeffdingRuleMarkov(beta, rho, G, H, W, Chi, FlowNum):
     """
     Estimate the K-L divergence and the threshold by use of weak convergence
     ----------------
     beta: the false alarm rate
+    mu: the stationary distribution 
     G: the gradient
     H: the Hessian
+    Sigma: the covariance matrix
     W: a sample path of the Gaussian empirical measure
+    Chi: a sample path of the "Chi-Square" estimation
     FlowNum: the number of flows
     ----------------
     """
-    _, SampNum, _ = W.shape
+    _, SampNum, N = W.shape  # Here, N equals the number of states in the new chain Z
 
     # Estimate K-L divergence using 2nd-order Taylor expansion
-    KL = []
+    KL_1 = []
     for j in range(0, SampNum):
         t = (1.0 / sqrt(FlowNum)) * np.dot(G, W[0, j, :]) + \
                 (1.0 / 2) * (1.0 / FlowNum) * \
                     np.dot(np.dot(W[0, j, :], H), W[0, j, :])
         # print t.tolist()
         # break
-        KL.append(np.array(t.real)[0])
-    eta = prctile(KL, 100 * (1 - beta))
+        KL_1.append(np.array(t.real)[0])
+    # Get the threshold
+    eta1 = prctile(KL_1, 100 * (1 - beta))
+    KL_2 = [Chi[idx] / (2 * FlowNum) for idx in xrange(len(Chi))]
+    # Using the simplified formula
+    # eta2 = 1.0 / (2 * FlowNum) * rho * chi2.ppf(1 - beta, N)
+    eta2 = prctile(KL_2, 100 * (1 - beta))
+    # print N
+
     # print(KL)
     # assert(1 == 2)
-    return KL, eta
+    return KL_1, KL_2, eta1, eta2
 
 def ChainGen(N, beta):
     # Get the initial distribution mu_0
@@ -389,7 +430,11 @@ def ChainGen(N, beta):
     SampNum = 1000
     W_1 = W_est(Sigma_1, SampNum)
 
-    return mu_0, mu, mu_1, P, G_1, H_1, W_1
+    rho_1 = EigCalc(H_1, Sigma_1)
+
+    Chi_1 = ChiSampEst(rho_1, SampNum)
+
+    return mu_0, mu, mu_1, P, G_1, H_1, Sigma_1, W_1, rho_1, Chi_1
 
 
 from ..Simulator.ThresCalc import ThresSanov, ThresActual, ThresWeakConv
@@ -404,32 +449,42 @@ class visualization:
         N = args.N
         beta = args.beta
         fig_dir = args.fig_dir
-        mu_0, mu, mu_1, P, G_1, H_1, W_1 = ChainGen(N, beta)
+        mu_0, mu, mu_1, P, G_1, H_1, Sigma_1, W_1, rho_1, Chi_1 = ChainGen(N, beta)
+
+        # print mu_1, rho_1
+        # assert 1 == 2
+
         KL_actual = []
-        KL_wc = []
+        KL_wc_1 = []
+        KL_wc_2 = []
         eta_actual = []
-        eta_wc = []
+        eta_wc_1 = []
+        eta_wc_2 = []
+	
         eta_Sanov = []
         # n_range = range(2 * N * N, 20 * N * N + 5, N * N)
         n_range = range(2 * N * N, 6 * N * N + 5, int(0.2 * N * N + 1))
         # n_range = range(2 * N * N, 2 * N * N + 205, N * N)
         for n in n_range:
-            KL_1, eta_1 = ThresActual(N, beta, n, mu_0, mu, mu_1, P, G_1, H_1, W_1).ThresCal()
-            KL_2, eta_2 = ThresWeakConv(N, beta, n, mu_0, mu, mu_1, P, G_1, H_1, W_1).ThresCal()
-            eta_3 = ThresSanov(N, beta, n, mu_0, mu, mu_1, P, G_1, H_1, W_1).ThresCal()
+            KL_1, eta_1 = ThresActual(N, beta, rho_1, n, mu_0, mu, mu_1, P, G_1, H_1, Sigma_1, W_1, Chi_1).ThresCal()
+            KL_2, KL_3, eta_2, eta_3 = ThresWeakConv(N, beta, rho_1, n, mu_0, mu, mu_1, P, G_1, H_1, Sigma_1, W_1, Chi_1).ThresCal()
+            eta_4 = ThresSanov(N, beta, rho_1, n, mu_0, mu, mu_1, P, G_1, H_1, Sigma_1, W_1, Chi_1).ThresCal()
             KL_actual.append(KL_1)
-            KL_wc.append(KL_2)
+            KL_wc_1.append(KL_2)
+            KL_wc_2.append(KL_3)
             eta_actual.append(eta_1)
-            eta_wc.append(eta_2)
-            eta_Sanov.append(eta_3)
+            eta_wc_1.append(eta_2)
+            eta_wc_2.append(eta_3)
+            eta_Sanov.append(eta_4)
             print('--> Number of samples: %d'%n)
             print('--> Actual threshold: %f'%eta_1)
             print('--> Estimated threshold (by weak convergence): %f'%eta_2)
-            print("--> Estimated threshold (by Sanov's theorem): %f"%eta_3)
-            print('-------------------------------------------------------')
+            print('--> Estimated threshold (by weak convergence (simplified)): %f'%eta_3)
+            print("--> Estimated threshold (by Sanov's theorem): %f"%eta_4)
+            print('-' * 68)
 
-        np.savez(fig_dir + 'eta_KL.npz', n_range=n_range, KL_actual=KL_actual, KL_wc=KL_wc, eta_actual=eta_actual, \
-                 eta_wc=eta_wc, eta_Sanov=eta_Sanov)
+        np.savez(fig_dir + 'eta_KL_mf.npz', n_range=n_range, KL_actual=KL_actual, KL_wc_1=KL_wc_1, KL_wc_2=KL_wc_2,\
+                 eta_actual=eta_actual, eta_wc_1=eta_wc_1, eta_wc_2=eta_wc_2, eta_Sanov=eta_Sanov)
 
         if args.e == 'cdf':
             ecdf_1 = sm.distributions.ECDF(KL_1)
@@ -440,10 +495,16 @@ class visualization:
             x_2 = np.linspace(min(KL_2), max(KL_2), num=100)
             y_2 = ecdf_2(x_2)
 
-            KL_actual, = plt.plot(x_1, y_1, "r")
-            KL_wc, = plt.plot(x_2, y_2, "b--")
+            ecdf_3 = sm.distributions.ECDF(KL_3)
+            x_3 = np.linspace(min(KL_3), max(KL_3), num=100)
+            y_3 = ecdf_3(x_3)
 
-            plt.legend([KL_actual, KL_wc], ["actual", "estimated"], loc=4)
+
+            KL_actual, = plt.plot(x_1, y_1, "r")
+            KL_wc_1, = plt.plot(x_2, y_2, "b--")
+            KL_wc_2, = plt.plot(x_3, y_3, 'g--')
+
+            plt.legend([KL_actual, KL_wc_1, KL_wc_2], ["actual", "estimated_1", "estimated_2 (simplified)"], loc=4)
             plt.title('Empirical CDF of the relative entropy ($N = %d$, $n = %d$)'%(N, n))
 
             pylab.ylim(0, 1.01)
@@ -453,18 +514,20 @@ class visualization:
                 plt.show()
         elif args.e == 'eta':
             eta_actual, = plt.plot(n_range, eta_actual, "ro-")
-            eta_wc, = plt.plot(n_range, eta_wc, "bs-")
+            eta_wc_1, = plt.plot(n_range, eta_wc_1, "bs-")
+            eta_wc_2, = plt.plot(n_range, eta_wc_2, "m*-")
             eta_Sanov, = plt.plot(n_range, eta_Sanov, "g^-")
 
-            plt.legend([eta_actual, eta_wc, eta_Sanov], ["a proxy of actual value", \
-                                                            "estimated by WC result", \
+            plt.legend([eta_actual, eta_wc_1, eta_wc_2, eta_Sanov], ["theoretical (actual) value", \
+                                                            "estimated by weak convergence analysis", \
+                                                            "estimated by weak convergence analysis (simplified)", \
                                                             "estimated by Sanov's theorem"])
             plt.xlabel('$n$ (number of samples)')
             plt.ylabel('$\eta$ (threshold)')
-            # plt.title('Threshold ($\eta$) versus Number of samples ($n$)')
+            plt.title('Threshold ($\eta$) versus Number of samples ($n$)')
             pylab.xlim(np.amin(n_range) - 1, np.amax(n_range) + 1)
-            pylab.ylim(0, 1)
-            savefig(fig_dir + 'eta_comp_N_%s.eps'%N)
+            # pylab.ylim(0, 1)
+            savefig(fig_dir + 'eta_comp_mf.eps')
             if args.show_pic:
-                print('--> export result to %s'%(fig_dir + 'eta_comp_N_%s.eps'%N))
+                print('--> export result to %s'%(fig_dir + 'eta_comp_mf.eps'))
                 plt.show()

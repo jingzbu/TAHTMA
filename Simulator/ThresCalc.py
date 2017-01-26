@@ -19,8 +19,9 @@ from TAHTMA.util.util import H_est, Sigma_est, W_est, KL_est, HoeffdingRuleMarko
 
 
 class ThresBase(object):
-    def __init__(self, N, beta, n, mu_0, mu, mu_1, P, G_1, H_1, W_1):
+    def __init__(self, N, beta, rho_1, n, mu_0, mu, mu_1, P, G_1, H_1, Sigma_1, W_1, Chi_1):
         self.N = N  # N is the row dimension of the original transition matrix Q
+        self.rho_1 = rho_1
         self.beta = beta  # beta is the false alarm rate
         self.n = n  # n is the number of samples
         self.mu_0 = mu_0
@@ -29,7 +30,9 @@ class ThresBase(object):
         self.P = P
         self.G_1 = G_1
         self.H_1 = H_1
+        self.Sigma_1 = Sigma_1
         self.W_1 = W_1
+        self.Chi_1 = Chi_1
 
 class ThresActual(ThresBase):
     """ Computing the actual (theoretical) K-L divergence and threshold
@@ -50,10 +53,13 @@ class ThresWeakConv(ThresBase):
     """ Estimating the K-L divergence and threshold by use of weak convergence
     """
     def ThresCal(self):
-        self.KL, self.eta = HoeffdingRuleMarkov(self.beta, self.G_1, self.H_1, self.W_1, self.n)
-        KL = self.KL
-        eta = self.eta
-        return KL, eta
+        self.KL_1, self.KL_2, self.eta1, self.eta2 = HoeffdingRuleMarkov(self.beta, self.rho_1, self.G_1, self.H_1, \
+                                                                         self.W_1, self.Chi_1, self.n)
+        KL_1 = self.KL_1
+        KL_2 = self.KL_2
+        eta1 = self.eta1
+        eta2 = self.eta2
+        return KL_1, KL_2, eta1, eta2
 
 class ThresSanov(ThresBase):
     """ Estimating the threshold by use of Sanov's theorem

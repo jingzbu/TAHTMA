@@ -476,14 +476,14 @@ class visualization:
             eta_wc_1.append(eta_2)
             eta_wc_2.append(eta_3)
             eta_Sanov.append(eta_4)
-            print('--> Number of samples: %d'%n)
-            print('--> Actual threshold: %f'%eta_1)
-            print('--> Estimated threshold (by weak convergence): %f'%eta_2)
-            print('--> Estimated threshold (by weak convergence (simplified)): %f'%eta_3)
-            print("--> Estimated threshold (by Sanov's theorem): %f"%eta_4)
-            print('-' * 68)
+            # print('--> Number of samples: %d'%n)
+            # print('--> Actual threshold: %f'%eta_1)
+            # print('--> Estimated threshold (by weak convergence): %f'%eta_2)
+            # print('--> Estimated threshold (by weak convergence (simplified)): %f'%eta_3)
+            # print("--> Estimated threshold (by Sanov's theorem): %f"%eta_4)
+            # print('-' * 68)
 
-        np.savez(fig_dir + 'eta_KL_mf.npz', n_range=n_range, KL_actual=KL_actual, KL_wc_1=KL_wc_1, KL_wc_2=KL_wc_2,\
+        np.savez(fig_dir + 'eta_KL_mb_N_%s.npz'%args.N, n_range=n_range, KL_actual=KL_actual, KL_wc_1=KL_wc_1, KL_wc_2=KL_wc_2,\
                  eta_actual=eta_actual, eta_wc_1=eta_wc_1, eta_wc_2=eta_wc_2, eta_Sanov=eta_Sanov)
 
         font = {'family': 'normal',
@@ -537,7 +537,7 @@ class visualization:
             # pylab.ylim(0, 1)
             pylab.xlim(np.amin(n_range) - 2, np.amax(n_range) + 2)
             # pylab.ylim(0.0, 1.2)
-            savefig(fig_dir + 'eta_comp_mf.eps')
+            savefig(fig_dir + 'eta_comp_mb_N_%s.eps'%(args.N))
             if args.show_pic:
-                print('--> export result to %s'%(fig_dir + 'eta_comp_mf.eps'))
+                print('--> export result to %s'%(fig_dir + 'eta_comp_mb_N_%s.eps'%(args.N)))
                 plt.show()

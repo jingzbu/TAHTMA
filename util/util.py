@@ -486,6 +486,14 @@ class visualization:
         np.savez(fig_dir + 'eta_KL_mf.npz', n_range=n_range, KL_actual=KL_actual, KL_wc_1=KL_wc_1, KL_wc_2=KL_wc_2,\
                  eta_actual=eta_actual, eta_wc_1=eta_wc_1, eta_wc_2=eta_wc_2, eta_Sanov=eta_Sanov)
 
+        font = {'family': 'normal',
+                'weight': 'normal',
+                'size': 26}
+
+        plt.figure(figsize=(11, 9))
+
+        matplotlib.rc('font', **font)
+
         if args.e == 'cdf':
             ecdf_1 = sm.distributions.ECDF(KL_1)
             x_1 = np.linspace(min(KL_1), max(KL_1), num=100)
@@ -513,20 +521,22 @@ class visualization:
             if args.show_pic:
                 plt.show()
         elif args.e == 'eta':
-            eta_actual, = plt.plot(n_range, eta_actual, "ro-")
-            eta_wc_1, = plt.plot(n_range, eta_wc_1, "bs-")
-            eta_wc_2, = plt.plot(n_range, eta_wc_2, "m*-")
-            eta_Sanov, = plt.plot(n_range, eta_Sanov, "g^-")
+            eta_actual, = plt.plot(n_range, eta_actual, "r-", linewidth=3.5)
+            eta_wc_1, = plt.plot(n_range, eta_wc_1, "b-", linewidth=3.5)
+            eta_wc_2, = plt.plot(n_range, eta_wc_2, "m-", linewidth=3.5)
+            eta_Sanov, = plt.plot(n_range, eta_Sanov, "g-", linewidth=3.5)
 
-            plt.legend([eta_actual, eta_wc_1, eta_wc_2, eta_Sanov], ["theoretical (actual) value", \
-                                                            "estimated by weak convergence analysis", \
-                                                            "estimated by weak convergence analysis (simplified)", \
-                                                            "estimated by Sanov's theorem"])
+            plt.legend([eta_actual, eta_wc_1, eta_wc_2, eta_Sanov], ["$\eta_n$", \
+                                                            "$\eta_n^{wc}$", \
+                                                            "$\\bar{\eta}_n^{wc}$", \
+                                                            "$\eta_n^{sv}$"])
             plt.xlabel('$n$ (number of samples)')
             plt.ylabel('$\eta$ (threshold)')
-            plt.title('Threshold ($\eta$) versus Number of samples ($n$)')
-            pylab.xlim(np.amin(n_range) - 1, np.amax(n_range) + 1)
+            # plt.title('Threshold ($\eta$) versus Number of samples ($n$)')
+            # pylab.xlim(np.amin(n_range) - 1, np.amax(n_range) + 1)
             # pylab.ylim(0, 1)
+            pylab.xlim(np.amin(n_range) - 2, np.amax(n_range) + 2)
+            # pylab.ylim(0.0, 1.2)
             savefig(fig_dir + 'eta_comp_mf.eps')
             if args.show_pic:
                 print('--> export result to %s'%(fig_dir + 'eta_comp_mf.eps'))

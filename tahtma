@@ -37,6 +37,7 @@ parser.add_argument("-e", default='eta', type=str, \
                     'cdf' (empirical CDF calculation and visualization); default='eta'")
 parser.add_argument("-beta", default=0.001, type=float, help="false alarm rate for Hoeffding's rule; default=0.001")
 parser.add_argument("-N", default=4, type=int, help="number of states in the original Markov chain; default=4")
+parser.add_argument("-k", default=1, type=int, help="index of simulations; default=1")
 parser.add_argument("-fig_dir", default='./Results/', type=str, \
                     help="folder for saving the output plot; default='./Results/'")
 parser.add_argument("-show_pic", default=False, action='store_true', \

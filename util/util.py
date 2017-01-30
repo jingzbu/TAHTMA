@@ -16,6 +16,7 @@ from matplotlib.mlab import prctile
 import matplotlib.pyplot as plt
 import pylab
 from pylab import *
+import json
 
 
 def rand_x(p):
@@ -483,7 +484,14 @@ class visualization:
             # print("--> Estimated threshold (by Sanov's theorem): %f"%eta_4)
             # print('-' * 68)
 
-        np.savez(fig_dir + 'eta_KL_mb_N_%s.npz'%args.N, n_range=n_range, KL_actual=KL_actual, KL_wc_1=KL_wc_1, KL_wc_2=KL_wc_2,\
+        save_data = {'N': args.N, 'beta':args.beta, 'k':args.k, 'n_range': n_range, 'eta_actual': eta_actual, 'eta_wc_1': eta_wc_1, 'eta_wc_2': eta_wc_2, \
+                     'eta_Sanov': eta_Sanov}
+
+        with open(fig_dir + 'eta_KL_mb_N_%s_beta_%s_k_%s.json'%(args.N, args.beta, args.k), 'w') as json_file:
+            json.dump(save_data, json_file)
+
+        np.savez(fig_dir + 'eta_KL_mb_N_%s_beta_%s_k_%s.eps'%(args.N, args.beta, args.k), N = args.N, \
+                 beta = args.beta, k = args.k, n_range=n_range, KL_actual=KL_actual, KL_wc_1=KL_wc_1, KL_wc_2=KL_wc_2,\
                  eta_actual=eta_actual, eta_wc_1=eta_wc_1, eta_wc_2=eta_wc_2, eta_Sanov=eta_Sanov)
 
         font = {'family': 'normal',
@@ -526,10 +534,10 @@ class visualization:
             eta_wc_2, = plt.plot(n_range, eta_wc_2, "m-", linewidth=3.5)
             eta_Sanov, = plt.plot(n_range, eta_Sanov, "g-", linewidth=3.5)
 
-            plt.legend([eta_actual, eta_wc_1, eta_wc_2, eta_Sanov], ["$\eta_n$", \
-                                                            "$\eta_n^{wc}$", \
-                                                            "$\\bar{\eta}_n^{wc}$", \
-                                                            "$\eta_n^{sv}$"])
+            plt.legend([eta_actual, eta_wc_1, eta_wc_2, eta_Sanov], [r"$\eta_{n,\beta}$", \
+                                                            r"$\eta_{n,\beta}^{\mathrm{wc}}$", \
+                                                            r"$\bar{\eta}_{n,\beta}^{\mathrm{wc}}$", \
+                                                            r"$\eta_{n,\beta}^{\mathrm{sv}}$"])
             plt.xlabel('$n$ (number of samples)')
             plt.ylabel('$\eta$ (threshold)')
             # plt.title('Threshold ($\eta$) versus Number of samples ($n$)')
@@ -537,7 +545,7 @@ class visualization:
             # pylab.ylim(0, 1)
             pylab.xlim(np.amin(n_range) - 2, np.amax(n_range) + 2)
             # pylab.ylim(0.0, 1.2)
-            savefig(fig_dir + 'eta_comp_mb_N_%s.eps'%(args.N))
+            savefig(fig_dir + 'eta_comp_mb_N_%s_beta_%s_k_%s.eps'%(args.N, args.beta, args.k))
             if args.show_pic:
-                print('--> export result to %s'%(fig_dir + 'eta_comp_mb_N_%s.eps'%(args.N)))
+                print('--> export result to %s'%(fig_dir + 'eta_comp_mb_N_%s_beta_%s_k_%s.eps'%(args.N, args.beta, args.k)))
                 plt.show()

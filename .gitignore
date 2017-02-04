@@ -3,3 +3,4 @@
 *.pyc
 Results/*.eps
 Results/*.npz
+test/.ipynb_checkpoints/*

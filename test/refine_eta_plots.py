@@ -35,9 +35,9 @@ for N in N_list:
 
             font = {'family' : 'normal',
                     'weight' : 'normal',
-                    'size'   : 26}
+                    'size'   : 28}
 
-            plt.figure(figsize=(11,9))
+            plt.figure(figsize=(11.5, 9))
 
             matplotlib.rc('font', **font)
 
@@ -53,7 +53,7 @@ for N in N_list:
             plt.xlabel('$n$ (sample size)')
             plt.ylabel('$\eta$ (threshold)')
 
-            plt.grid()
+            # plt.grid()
             # plt.title('Threshold ($\eta$) versus Number of samples ($n$)')
             # pylab.xlim(np.amin(n_range) - 1, np.amax(n_range) + 1)
             # pylab.ylim(0, 1)

@@ -6,8 +6,12 @@ from pylab import *
 
 fig_dir = '/home/jzh/Dropbox/tsp_rev_refs/figs/'
 
-N_list = [2, 3, 4, 5, 6, 7, 8]
-beta_list = [0.1, 0.01, 0.001, 0.0001, 0.00001]
+# N_list = [2, 3, 4, 5, 6, 7, 8]
+# beta_list = [0.1, 0.01, 0.001, 0.0001, 0.00001]
+
+N_list = [2, 4, 6, 8]
+beta_list = [0.001]
+
 k_list = range(21)[1:]
 
 # N_list = [2]
